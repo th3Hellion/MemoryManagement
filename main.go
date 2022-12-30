@@ -7,14 +7,13 @@ import (
 
 var OutputNumber = 1
 var errors string
+var outputString = &OutputFile.output
 
 func main() {
 	start()
 }
 
 func start() {
-	outputString := &OutputFile.output
-	errors = ""
 	instructions := ReadInstructions()
 	MemorySize, _ := strconv.Atoi(instructions[0][0])
 
@@ -41,12 +40,14 @@ func start() {
 			fmt.Println("Error: Invalid instruction")
 		}
 
+		// Last instruction
 		if len(instructions)-1 == i {
 			Output(outputString, MainMemory)
 			Fit++
 			if Fit == END {
 				break
 			}
+			// Do next fit
 			start()
 
 		}

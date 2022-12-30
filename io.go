@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 )
 
 type File struct {
@@ -13,16 +14,22 @@ type File struct {
 	output string
 }
 
-var InstructionFilePath = "instructions.txt"
+var once sync.Once
+var InstructionFilePath string
+var OutputFile File
 
-var OutputFile = File{title: filepath.Base(InstructionFilePath), output: ""}
-
-// ReadInstructions Read the instructions from the file
+// Read the instructions from the file
 func ReadInstructions() (instructions [][]string) {
 
 	fmt.Println("Select instruction file from current directory")
-	// fmt.Scanln(&InstructionFilePath)
+	once.Do(func() { fmt.Scanln(&InstructionFilePath) })
 	InstructionFilePath = strings.Trim(InstructionFilePath, "'")
+	OutputFile = File{title: filepath.Base(InstructionFilePath), output: *outputString}
+
+	//
+	if !strings.HasSuffix(InstructionFilePath, ".in") {
+		InstructionFilePath += ".in"
+	}
 
 	file, err := os.Open(InstructionFilePath)
 	if err != nil {
@@ -45,14 +52,14 @@ func ReadInstructions() (instructions [][]string) {
 	return
 }
 
-// OutputResultsFile Output the final results to a file
+// Output the final results to a file
 func OutputResultsFile(results string, number string) {
 	if number == "" {
 		return
 	}
 	OutputFile.output = results
 	OutputFile.title = strings.TrimSuffix(OutputFile.title, filepath.Ext(OutputFile.title))
-	file, err := os.Create(OutputFile.title + "_" + number + ".txt")
+	file, err := os.Create(OutputFile.title + "_" + number + ".out")
 	if err != nil {
 		fmt.Println("Error creating file")
 		panic(err)
@@ -71,9 +78,8 @@ func OutputResultsFile(results string, number string) {
 
 }
 
-// ProduceOutputString Output the current status of the memory in an intermediate output
+// Result as a string
 func (f *File) ProduceOutputString(memory Memory, errors string) (output string) {
-	//Allocated Blocks
 	allocatedBlocks := make(map[int][]int)
 	for i, v := range memory.mainMemory {
 		if v != -1 {

@@ -25,16 +25,15 @@ func Allocate(instruction []string, MainMemory *Memory) (errors string) {
 }
 
 func Deallocate(instruction []string, MainMemory *Memory) (errors string) {
-	memoryBlock, err := strconv.Atoi(instruction[1])
-	if err != nil {
-		fmt.Println("Error converting memory block to int")
-		panic(err)
-	}
+	memoryBlock, _ := strconv.Atoi(instruction[1])
+
 	if !MainMemory.Remove(memoryBlock) {
 		errors += instruction[0] + ";" + instruction[1] + "\n"
 	}
 	return
 }
+
+// Remove from array
 func (m *Memory) Remove(memoryBlock int) (success bool) {
 	if !hasMemoryBlock(m.mainMemory, memoryBlock) {
 		return false

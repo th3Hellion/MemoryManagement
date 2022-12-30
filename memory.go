@@ -24,6 +24,7 @@ func CalculateFragmentation(memory Memory) (fragmentation float32) {
 	return
 }
 
+// Fill with -1 to indicate free memoryi (null)
 func MakeMemory(memory *Memory) {
 	for i := range memory.mainMemory {
 		memory.mainMemory[i] = -1
